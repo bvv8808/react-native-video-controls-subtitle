@@ -1,0 +1,35 @@
+{
+  "author": {
+    "name": "hyeonwoo",
+    "url": "https://github.com/bvv8808"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "lodash": "^4.16.4"
+  },
+  "deprecated": false,
+  "description": "Editting controls and subtitle of awesome-react-native-video-controls and improve its functionality",
+  "homepage": "https://github.com/bvv8808/react-native-video-controls-subtitle#readme",
+  "keywords": [
+    "react-native",
+    "react-native-video",
+    "react video controls",
+    "react video player",
+    "react native subtitle"
+  ],
+  "license": "MIT",
+  "main": "VideoPlayer.js",
+  "name": "@hyeonwoo/react-native-video-controls-subtitle",
+  "peerDependencies": {
+    "react-native": ">=0.46.0",
+    "react-native-video": "^2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bvv8808/react-native-video-controls-subtitle.git"
+  },
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 1"
+  },
+  "version": "1.0.1"
+}
