@@ -2,11 +2,6 @@
 
 > `Note` This is the same with the 'react-native-controls' library. This is just what i have added the VideoPlayer.d.ts, the type define file on exsting that. also, it haves a different style for subtitle. I think the display style for subtitle is better than original library. Thank you.
 
-## Change Log
-
-**MODIFIED A BUG RELATED WITH THE SEEK BAR AND SUBTITLE**
-When seek bar moved to left, the subtitles didn't appear. It fixed on `v1.1.0`.
-
 ## Features
 
 **SUBTITLE SUPPORT ADDED**
