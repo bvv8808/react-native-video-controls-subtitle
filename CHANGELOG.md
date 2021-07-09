@@ -1,6 +1,10 @@
+## 1.2.2 (09-07-2021)
+
+- Fix bug that the app crash when moved seekbar back far.
+
 ## 1.2.0 (09-07-2021)
 
-- Fix bug that the app crash when moved seekbar to a far somewhere.
+- Fix bug that the app crash when moved seekbar forward far.
 - Make the seek circle's touch range large.
 
 ## 1.1.0 (30-06-2021)
