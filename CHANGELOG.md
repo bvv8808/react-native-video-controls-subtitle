@@ -1,4 +1,9 @@
-## 1.5.1 (30-06-2021)
+## 1.2.0 (09-07-2021)
+
+- Fix bug that the app crash when moved seekbar to a far somewhere.
+- Make the seek circle's touch range large.
+
+## 1.1.0 (30-06-2021)
 
 - MODIFIED A BUG RELATED WITH THE SEEK BAR AND SUBTITLE
   When seek bar moved to left, the subtitles didn't appear. It fixed on `v1.1.0`.
