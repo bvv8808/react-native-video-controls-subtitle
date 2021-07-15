@@ -32,5 +32,5 @@
     "test": "echo \"No test specified\" && exit 1",
     "publish": "npm publish --access public"
   },
-  "version": "1.2.2"
+  "version": "1.2.3"
 }

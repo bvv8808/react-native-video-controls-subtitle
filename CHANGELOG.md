@@ -1,3 +1,7 @@
+## 1.2.3 (15-07-2021)
+
+- Let the player be paused when seekbar moved.
+
 ## 1.2.2 (09-07-2021)
 
 - Fix bug that the app crash when moved seekbar back far.

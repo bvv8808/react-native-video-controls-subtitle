@@ -50,6 +50,9 @@ export default class VideoPlayer extends Component {
       error: false,
       duration: 0,
 
+      // Syncronize
+      stop1s: false,
+
       //Subtitle
       subtitleIndex: 0,
       currentTimeInDeciSeconds: 0,
@@ -415,6 +418,7 @@ export default class VideoPlayer extends Component {
    */
   _togglePlayPause() {
     let state = this.state;
+    if (state.stop1s) return;
     state.paused = !state.paused;
     this.setState(state, () => {
       console.log("_togglePlayPause");
@@ -555,7 +559,7 @@ export default class VideoPlayer extends Component {
         this.parseTimeStringToDeciSecond(s.startTime)
       );
       const newSubtitleIdx = subtitleStartTimes.findIndex((t) => t > time);
-      state.subtitleIndex = newSubtitleIdx;
+      state.subtitleIndex = newSubtitleIdx > 0 ? newSubtitleIdx - 1 : 0;
     }
 
     state.currentTime = time;
@@ -755,6 +759,7 @@ export default class VideoPlayer extends Component {
                 seekerOffset: this.state.seekerPosition,
                 subtitleIndex: newSubtitleIdx,
                 seeking: false,
+                stop1s: false,
               },
               () => {
                 console.log("seekPanRelease");
@@ -762,6 +767,9 @@ export default class VideoPlayer extends Component {
             );
           }, 1000);
         }
+
+        this.setState({ stop1s: true });
+        this.pause();
       },
     });
   }
@@ -859,8 +867,6 @@ export default class VideoPlayer extends Component {
 
     if (currentTime > endTime) {
       if (currentTime - endTime > 10) {
-        console.log("[[currentTime > endTime]]");
-        const newSubtitleIdx = this.findNewSubtitleIdx();
         const dIdx = subtitles
           .slice(subtitleIndex)
           .map((s) => this.parseTimeStringToDeciSecond(s.endTime))
@@ -874,12 +880,9 @@ export default class VideoPlayer extends Component {
 
     if (currentTime < endTime && currentTime > startTime) {
       return subtitles[subtitleIndex].text;
-    } else {
-      console.log("@@@");
-      return null;
-    }
+    } else return null;
   }
-  findNewSubtitleIdx() {}
+
   /**End of Subtitle Part */
   /**
     | -------------------------------------------------------
@@ -1471,8 +1474,8 @@ const styles = {
     handle: {
       position: "absolute",
       marginLeft: -7,
-      height: 35,
-      width: 35,
+      height: 45,
+      width: 45,
     },
     circle: {
       borderRadius: 12,

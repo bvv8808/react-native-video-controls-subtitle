@@ -1,6 +1,6 @@
 # react-native-video-controls-subtitle
 
-> `Note` This is the same with the 'react-native-controls' library. This is just what i have added the VideoPlayer.d.ts, the type define file on exsting that. also, it haves a different style for subtitle. I think the display style for subtitle is better than original library. Thank you.
+> `Note` This is based on 'react-native-controls-subtitle' library. I added _VideoPlayer.d.ts_ file and fixed some bugs. You can check the changelog in my repository.
 
 ## Features
 
@@ -12,7 +12,7 @@ and [react-native-video](https://github.com/react-native-community/react-native-
 
 ## Installation
 
-Run `npm install --save react-native-video react-native-video-controls-subtitle`
+Run `npm install --save react-native-video @hyeonwoo/react-native-video-controls-subtitle`
 
 Then run `react-native link react-native-video`
 
