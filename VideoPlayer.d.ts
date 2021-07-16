@@ -7,7 +7,7 @@ export type TSubtitle = {
   text: string;
 };
 
-export interface Props {
+export interface IProps {
   resizeMode?: "stretch" | "contain" | "cover" | "none";
   paused?: boolean;
   source: { uri?: string; headers?: { [key: string]: string } } | number;
@@ -24,24 +24,16 @@ export interface Props {
   playWhenInactive?: boolean;
   playInBackground?: boolean;
   repeat?: boolean;
-  title?: string;
-  controlTimeout?: number;
-  navigator?: any;
-  disableBack?: boolean;
-  disableVolumn?: boolean;
   disableFullscreen?: boolean;
   disablePlayPause?: boolean;
   disableTimer?: boolean;
   disableSeekbar?: boolean;
   disableError?: boolean;
   disableLoader?: boolean;
-  isFullscreen?: boolean;
-  seekColor?: string;
-  toggleFullscreen?: () => void;
+  toggleFullscreen?: (changedFullscreenMode?: boolean) => void;
 
   onError?: () => void;
   onEnd?: () => void;
-  onBack?: () => void;
   onLoadStart?: () => void;
   onLoad?: () => void;
   onProgress?: () => void;
@@ -49,4 +41,6 @@ export interface Props {
   onFullscreenPlayerWillDismiss?: () => void;
 }
 
-export default class VideoPlayer extends React.Component<Props> {}
+export interface IState {}
+
+export default class VideoPlayer extends React.Component<IProps> {}

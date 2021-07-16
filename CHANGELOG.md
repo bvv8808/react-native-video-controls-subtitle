@@ -1,3 +1,13 @@
+## 2.0.0 (16-07-2021)
+
+- Deprecate Volume
+- Modify the control rendering behaviour
+- Modify how it calculate and manage the seekbar position
+- Improve the performance related with subtitle rendering
+- Due to the changes above, following bugs were fixed automatically.
+  1. When the screen orientation changed, the seekbar's position went wrong.
+  2. Though controls is hided, they can be still operated because they aren't unmount. Before this change, they are just {opacity: 0} and we can still touch them.
+
 ## 1.2.3 (15-07-2021)
 
 - Let the player be paused when seekbar moved.

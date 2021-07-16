@@ -4,9 +4,6 @@
     "url": "https://github.com/bvv8808"
   },
   "bundleDependencies": false,
-  "dependencies": {
-    "lodash": "^4.16.4"
-  },
   "deprecated": false,
   "description": "Editting controls and subtitle of awesome-react-native-video-controls and improve its functionality",
   "homepage": "https://github.com/bvv8808/react-native-video-controls-subtitle#readme",
@@ -15,7 +12,8 @@
     "react-native-video",
     "react video controls",
     "react video player",
-    "react native subtitle"
+    "react native subtitle",
+    "react native subtitle controls"
   ],
   "license": "MIT",
   "main": "VideoPlayer.js",
@@ -32,5 +30,5 @@
     "test": "echo \"No test specified\" && exit 1",
     "publish": "npm publish --access public"
   },
-  "version": "1.2.3"
+  "version": "2.0.0"
 }
