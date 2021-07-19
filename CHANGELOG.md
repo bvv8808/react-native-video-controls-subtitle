@@ -1,3 +1,7 @@
+## 2.0.5 (19-07-2021)
+
+- Fix bug that when set the subtitle props and then unset andthen re-set that props, subtitle is not showing.
+
 ## 2.0.4 (19-07-2021)
 
 - Fix bug that when the subtitle props changed, that doesn't apply to this component.

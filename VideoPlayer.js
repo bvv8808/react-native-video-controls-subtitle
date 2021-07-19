@@ -143,7 +143,8 @@ export default class VideoPlayer extends Component {
   }
   componentDidUpdate(newProps, newState) {
     if (!newProps || !newProps.subtitle) {
-      if (this.state.subtitles.length > 0) this.setState({ subtitles: [] });
+      if (this.state.subtitles.length > 0)
+        this.setState({ subtitles: [], subtitleFirstText: "" });
       return;
     }
     if (newProps.subtitle[0].text === this.state.subtitleFirstText) return;
@@ -659,6 +660,7 @@ export default class VideoPlayer extends Component {
   }
   renderSeekbar() {
     const handleOffset = this.player.seekerWidth * this.state.timeRate;
+    console.log("@@@ handleOffset ::: ", handleOffset);
 
     return (
       <View style={styles.seekbar.container}>
