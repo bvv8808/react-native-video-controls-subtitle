@@ -1,3 +1,18 @@
+## 2.0.3 (19-07-2021)
+
+- Remove console logs
+- Edit README
+
+## 2.0.2 (19-07-2021)
+
+- Modify the sensitivity of seekbar
+
+## 2.0.1 (16-07-2021)
+
+- Fix bug that seekbar can go over the max of seekbar width
+- Fix some bugs because of platform specified
+- Let it restart when the video ended and then press the play button
+
 ## 2.0.0 (16-07-2021)
 
 - Deprecate Volume

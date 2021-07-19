@@ -4,11 +4,91 @@
 
 ## Features
 
-**SUBTITLE SUPPORT ADDED**
-In This package, you can pass a function as 'toggleFullscreen' prop to component to control the functionality of toggle fullscreen button.
+**HOW TO CONTROL FULLSCREEN AND USE THIS COMPONENT (Example)**
 
-You can find other features in [react-native-video-controls] (https://github.com/react-native-community/react-native-video-controls)
-and [react-native-video](https://github.com/react-native-community/react-native-video) pages.
+> `Note` It doesn't support the origin fullscreen mode on iOS because of the subtitle supporting.
+
+```javascript
+useEffect(() => {
+  loadDetail({variables: {lang: store.getState().lang}});
+  loadComment();
+  Orientation.lockToPortrait();
+
+  // Note: You can't use state in a BackHandler event listener. So i'm gonna use redux.
+  const dismissAndroidFullscreen = () => {
+    const isFullscreen = store.getState().fullscreen;
+    if (!isFullscreen) return false;
+
+    dismissFullscreen();
+    return true;
+  };
+  BackHandler.addEventListener('hardwareBackPress', dismissAndroidFullscreen);
+
+  return () => {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      dismissAndroidFullscreen,
+    );
+  };
+}, []);
+
+const dismissFullscreen = () => {
+    store.dispatch({
+      type: 'SET',
+      payload: {fullscreen: false},
+    });
+    Orientation.lockToPortrait();
+    if (Platform.OS === 'android') refPlayer.current?.dismissFullscreenPlayer();
+    refControl.current?.setFullscreen(false);
+  };
+
+const mySubtitle = [
+  {startTime: '00:00:00,000', endTime: '00:00:03,000', text: 'hi'},
+  {startTime: '00:00:05,000', endTime: '00:00:07,000', text: 'hello'}
+]
+
+...
+<View
+  style={{
+    width: '100%',
+    height: store.getState().fullscreen
+      ? window.height
+      : window.width * (9 / 16),
+    position: 'absolute',
+    top: store.getState().fullscreen ? 0 : headerHeight,
+  }}>
+  <VideoPlayer
+    ref={(ref: any) => {
+      if (ref) {
+        refControl.current = ref;
+        refPlayer.current = ref.player.ref;
+      }
+    }}
+    onLoad={() => {
+      refPlayer.current?.seek(0);
+    }}
+    toggleFullscreen={() => {
+      if (store.getState().fullscreen) {
+        dismissFullscreen();
+      } else {
+        if (Platform.OS === 'android')
+          refPlayer.current?.presentFullscreenPlayer();
+        store.dispatch({
+          type: 'SET',
+          payload: {fullscreen: true},
+        });
+        Orientation.lockToLandscape();
+        refControl.current?.setFullscreen(true);
+      }
+    }}
+    source={{uri: URL_YOU_WANT}}
+    paused
+    resizeMode="contain"
+    subtitle={mySubtitles}
+    useNativeDriver={false}
+  />
+</View>
+```
 
 ## Installation
 
@@ -54,22 +134,20 @@ The subtitle prop expects the JSON to have the following key-value format:
 ];
 ```
 
-## OTHER FEATURES AND USAGE
+## Methods
 
-The `<VideoPlayer>` component can take a number of inputs to customize it as needed. They are outlined below:
-The `<VideoPlayer>` component follows the API of the `<Video>` component at [react-native-video](https://github.com/react-native-community/react-native-video) and [react-native-video-controls](https://github.com/react-native-community/react-native-video-controls)
+#### pause()
 
-take a number of inputs to customize it as needed. They are outlined below:
+Pause the video
 
-```javascript
-// At the top where our imports are...
-import VideoPlayer from "react-native-video-controls-subtitles";
+#### play()
 
-// in the component's render() function
-<VideoPlayer
-  source={{ uri: "https://vjs.zencdn.net/v/oceans.mp4" }}
-  navigator={this.props.navigator}
-  toggleFullscreen={YourCustomizedFunction}
-  subtitle={this.props.subtitle}
-/>;
-```
+Play the video
+
+#### seekTo(seconds)
+
+Seek to the time you want
+
+#### getCurrentTime()
+
+Get current playing seconds

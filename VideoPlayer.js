@@ -131,7 +131,6 @@ export default class VideoPlayer extends Component {
 
   componentDidMount() {
     if (this.props.subtitle) {
-      console.log("prop subtitle ::: ", this.props.subtitle.length);
       this.setState({
         subtitles: this.props.subtitle.map((s) => ({
           startTime: this.parseTimeStringToDeciSecond(s.startTime),
@@ -142,6 +141,7 @@ export default class VideoPlayer extends Component {
     }
   }
   componentDidUpdate(newProps, newState) {
+    if (!newProps || !newProps.subtitle) return;
     if (newProps.subtitle.length === newState.subtitles.length) return;
 
     this.setState({
@@ -204,15 +204,15 @@ export default class VideoPlayer extends Component {
     }
     const currentTimeDec = Math.floor(data.currentTime * 10) / 10.0;
     state.currentTimeInDeciSeconds = currentTimeDec;
-    // console.log(
-    //   '@###########',
-    //   currentTimeDec,
-    //   state.totalDuration,
-    //   (currentTimeDec / state.totalDuration) * 100,
-    // );
 
+    if (currentTimeDec / state.totalDuration >= 0.998) {
+      state.paused = true;
+    }
+
+    // if (Platform.OS==='ios') {
     state.timeRate = currentTimeDec / state.totalDuration;
     state.deltaXSeeking = 0;
+    // }
 
     this.setState(
       state
@@ -246,6 +246,12 @@ export default class VideoPlayer extends Component {
   _togglePlayPause() {
     let state = this.state;
     if (state.stop1s) return;
+    if (this.state.timeRate >= 0.998) {
+      // #restart
+
+      this.seekTo(0, true);
+      return;
+    }
     state.paused = !state.paused;
     this.setState(state);
   }
@@ -268,7 +274,6 @@ export default class VideoPlayer extends Component {
   _toggleFullscreen() {
     let state = this.state;
     const changedFullscreenMode = !state.isFullscreen;
-    console.log(changedFullscreenMode);
 
     if (this.props.toggleFullscreen) {
       this.props.toggleFullscreen(changedFullscreenMode);
@@ -297,9 +302,7 @@ export default class VideoPlayer extends Component {
   _toggleTimer() {
     let state = this.state;
     state.showTimeRemaining = !state.showTimeRemaining;
-    this.setState(state, () => {
-      console.log("_toggleTimer");
-    });
+    this.setState(state);
   }
 
   _hideControls() {
@@ -320,7 +323,6 @@ export default class VideoPlayer extends Component {
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
 
       onPanResponderGrant: (evt, gestureState) => {
-        console.log("Grant");
         this.clearControlTimeout();
         this.setState({ seeking: true, paused: true });
       },
@@ -328,21 +330,36 @@ export default class VideoPlayer extends Component {
         // console.log(gestureState.dx);
         const dRate = gestureState.dx / this.player.seekerWidth;
 
-        if (this.state.timeRate + dRate <= 0) return;
+        const newTimeRate = this.state.timeRate + dRate;
+        if (newTimeRate <= 0 || newTimeRate >= 0.998) return;
 
-        this.setState({ deltaXSeeking: gestureState.dx });
+        this.setState({
+          deltaXSeeking: gestureState.dx,
+          currentTime: Math.floor(this.state.totalDuration * newTimeRate),
+        });
       },
       onPanResponderRelease: (evt, gestureState) => {
-        console.log("Release");
         const { timeRate, deltaXSeeking } = this.state;
         const dRate = deltaXSeeking / this.player.seekerWidth;
         const newTimeRate = timeRate + dRate;
 
-        setTimeout(() => {
-          this.setState({ seeking: false });
-        }, 1000);
+        // setTimeout(() => {
+        //   this.setState(s => {
+        //     let newState = {seeking: false}
+
+        //     if (Platform.OS==='android') {
+        //       newState.deltaXSeeking = 0;
+        //       newState.timeRate = newTimeRate
+        //     }
+        //     return newState
+        //   });
+        // }, 1000);
+
+        // if (newTimeRate >= 100) this.events.onEnd();
+        // else {
         this.seekTo(this.state.totalDuration * newTimeRate);
         this.setControlTimeout();
+        // }
         // 새로운 timeRate 반영과 deltaXSeeking 초기화는 seekTo실행 직후 실행 되는 onProgress에서 처리
       },
     });
@@ -354,8 +371,10 @@ export default class VideoPlayer extends Component {
   play() {
     this.setState({ paused: false });
   }
-  seekTo(time = 0) {
-    console.log("seekTime :::   ", time);
+  getCurrentTime() {
+    return this.state.currentTime;
+  }
+  seekTo(time = 0, restart = false) {
     let state = this.state;
 
     if (this.props.subtitle) {
@@ -364,9 +383,26 @@ export default class VideoPlayer extends Component {
       state.subtitleIndex = newSubtitleIdx > 0 ? newSubtitleIdx - 1 : 0;
     }
 
-    // state.currentTime = time;
+    // this.setState(s => {
+    //   let newState = {seeking: false}
+
+    //   return newState
+    // });
+
+    if (Platform.OS === "android") {
+      state.deltaXSeeking = 0;
+      state.timeRate = time / this.state.totalDuration;
+    }
+    state.seeking = false;
+
     this.player.ref.seek(time);
-    this.setState(state);
+    this.setState(state, () => {
+      if (restart) this.setState({ paused: false });
+    });
+  }
+
+  setFullscreen(f) {
+    this.setState({ isFullscreen: f });
   }
 
   /**
@@ -475,7 +511,6 @@ export default class VideoPlayer extends Component {
 
     const { subtitles } = this.state;
     const curSubtitle = subtitles[subtitleIndex];
-    console.log("Subtitle : ", subtitleIndex + "/" + subtitles.length);
     if (!curSubtitle) return null;
 
     if (currentTime > curSubtitle.endTime) {
@@ -618,21 +653,11 @@ export default class VideoPlayer extends Component {
     );
   }
   renderSeekbar() {
-    // console.log(this.state.seekerPositionPercent + '%')
-    console.log("Render SeekBar::TimeRate--> ", this.player.seekerWidth);
     const handleOffset = this.player.seekerWidth * this.state.timeRate;
-    // console.log(handleOffset, typeof handleOffset, isNaN(handleOffset));
-    // console.log('deltaX::: ', this.state.deltaXSeeking);
 
     return (
       <View style={styles.seekbar.container}>
-        <View
-          style={styles.seekbar.track}
-          onLayout={(event) => {
-            // console.log('#2:: ', event.nativeEvent.layout.width);
-            // this.player.seekerWidth = event.nativeEvent.layout.width;
-          }}
-        >
+        <View style={styles.seekbar.track}>
           <View
             style={[
               styles.seekbar.fill,
@@ -725,7 +750,6 @@ export default class VideoPlayer extends Component {
   renderSubtitle() {
     const subtitleToShow = this.showSubtitle();
 
-    // console.log('SS::: ', this.showSubtitle());
     return (
       <View
         style={
@@ -758,8 +782,7 @@ export default class VideoPlayer extends Component {
         <View
           style={[styles.player.container, this.styles.containerStyle]}
           onLayout={({ nativeEvent: e }) => {
-            this.player.seekerWidth = e.layout.width;
-            console.log("#1:: ", e.layout.width);
+            this.player.seekerWidth = e.layout.width - 40;
           }}
         >
           <Video
@@ -977,15 +1000,21 @@ const styles = {
     },
     handle: {
       position: "absolute",
-      marginLeft: -7,
-      height: 45,
-      width: 45,
+      // top = handleHeight/2 - containerHeight/2
+      top: -(23 - 14),
+      marginLeft: -40,
+      height: 46,
+      width: 80,
+      justifyContent: "center",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "#ffffff00",
     },
     circle: {
       borderRadius: 12,
       position: "relative",
-      top: 8,
-      left: 8,
+      // top: 8,
+      // left: 8,
       height: 12,
       width: 12,
     },
