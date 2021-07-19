@@ -44,6 +44,7 @@ export default class VideoPlayer extends Component {
       //Subtitle
       subtitles: [],
       subtitleIndex: 0,
+      subtitleFirstText: "",
       currentTimeInDeciSeconds: 0,
     };
 
@@ -141,15 +142,19 @@ export default class VideoPlayer extends Component {
     }
   }
   componentDidUpdate(newProps, newState) {
-    if (!newProps || !newProps.subtitle) return;
-    if (newProps.subtitle.length === newState.subtitles.length) return;
+    if (!newProps || !newProps.subtitle) {
+      if (this.state.subtitles.length > 0) this.setState({ subtitles: [] });
+      return;
+    }
+    if (newProps.subtitle[0].text === this.state.subtitleFirstText) return;
 
     this.setState({
-      subtitles: this.props.subtitle.map((s) => ({
+      subtitles: newProps.subtitle.map((s) => ({
         startTime: this.parseTimeStringToDeciSecond(s.startTime),
         endTime: this.parseTimeStringToDeciSecond(s.endTime),
         text: s.text,
       })),
+      subtitleFirstText: newProps.subtitle[0].text,
     });
   }
 
