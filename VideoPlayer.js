@@ -36,6 +36,7 @@ export default class VideoPlayer extends Component {
       isFullscreen: false,
       timeRate: 0,
       deltaXSeeking: 0,
+      pausedBySeek: false,
 
       // Custom State
       stop1s: false,
@@ -250,16 +251,18 @@ export default class VideoPlayer extends Component {
   }
 
   _togglePlayPause() {
-    let state = this.state;
-    if (state.stop1s) return;
-    if (this.state.timeRate >= 0.998) {
-      // #restart
+    if (!this.props.onPressStart || this.props.onPressStart() === true) {
+      let state = this.state;
+      if (state.pausedBySeek) return;
+      if (this.state.timeRate >= 0.998) {
+        // #restart
 
-      this.seekTo(0, true);
-      return;
+        this.seekTo(0, true);
+        return;
+      }
+      state.paused = !state.paused;
+      this.setState(state);
     }
-    state.paused = !state.paused;
-    this.setState(state);
   }
 
   _toggleControls() {
@@ -330,7 +333,7 @@ export default class VideoPlayer extends Component {
 
       onPanResponderGrant: (evt, gestureState) => {
         this.clearControlTimeout();
-        this.setState({ seeking: true, paused: true });
+        this.setState({ seeking: true, paused: true, pausedBySeek: true });
       },
       onPanResponderMove: (evt, gestureState) => {
         // console.log(gestureState.dx);
@@ -365,6 +368,9 @@ export default class VideoPlayer extends Component {
         // else {
         this.seekTo(this.state.totalDuration * newTimeRate);
         this.setControlTimeout();
+        setTimeout(() => {
+          this.setState({ paused: false, pausedBySeek: false });
+        }, 1000);
         // }
         // 새로운 timeRate 반영과 deltaXSeeking 초기화는 seekTo실행 직후 실행 되는 onProgress에서 처리
       },
@@ -660,7 +666,6 @@ export default class VideoPlayer extends Component {
   }
   renderSeekbar() {
     const handleOffset = this.player.seekerWidth * this.state.timeRate;
-    console.log("@@@ handleOffset ::: ", handleOffset);
 
     return (
       <View style={styles.seekbar.container}>

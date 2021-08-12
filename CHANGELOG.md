@@ -1,3 +1,7 @@
+## 2.0.6 (12-08-2021)
+
+- After seekbar moved, video doesn't stop anymore.
+
 ## 2.0.5 (19-07-2021)
 
 - Fix bug that when set the subtitle props and then unset andthen re-set that props, subtitle is not showing.
